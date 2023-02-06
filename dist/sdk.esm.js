@@ -38,6 +38,7 @@ var Rounding;
 var FACTORY_ADDRESS = '0x0f2C36CcE00036DFD3e3569061ADFE935a7237cE';
 var FACTORY_ADDRESS_PCS = '0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73';
 var INIT_CODE_HASH = '0xf6dc550707c6a3f739f89eaee3b594aab3e1904c398231e0902bd1f9e0eb7cb0';
+var INIT_CODE_HASH_PCS = '0x00fb7f630766e6a796048ea87d01acd3068e8ff67d078148a3fa3f4a84f69bd5';
 var MINIMUM_LIQUIDITY = /*#__PURE__*/JSBI.BigInt(1000); // exports for internal consumption
 
 var ZERO = /*#__PURE__*/JSBI.BigInt(0);
@@ -766,19 +767,19 @@ var Pair = /*#__PURE__*/function () {
 
   Pair.getAddress = function getAddress(tokenA, tokenB) {
     var _PAIR_ADDRESS_CACHE, _PAIR_ADDRESS_CACHE$t;
-    var curFACTORY = (tokenA.symbol == "HODL" || tokenB.symbol == "HODL") ? FACTORY_ADDRESS_PCS : FACTORY_ADDRESS;
+    
+    var PCSSwap = ((tokenA.symbol == "HODL" || tokenB.symbol == "HODL") && (tokenA.symbol != "HODLX" && tokenB.symbol != "HODLX"));
+
+    var curFACTORY = PCSSwap ? FACTORY_ADDRESS_PCS : FACTORY_ADDRESS;
+    var initCodeHash = PCSSwap ? INIT_CODE_HASH_PCS : INIT_CODE_HASH;
+
     var tokens = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA]; // does safety checks
 
     if (((_PAIR_ADDRESS_CACHE = PAIR_ADDRESS_CACHE) === null || _PAIR_ADDRESS_CACHE === void 0 ? void 0 : (_PAIR_ADDRESS_CACHE$t = _PAIR_ADDRESS_CACHE[tokens[0].address]) === null || _PAIR_ADDRESS_CACHE$t === void 0 ? void 0 : _PAIR_ADDRESS_CACHE$t[tokens[1].address]) === undefined) {
       var _PAIR_ADDRESS_CACHE2, _extends2, _extends3;
-      PAIR_ADDRESS_CACHE = _extends({}, PAIR_ADDRESS_CACHE, (_extends3 = {}, _extends3[tokens[0].address] = _extends({}, (_PAIR_ADDRESS_CACHE2 = PAIR_ADDRESS_CACHE) === null || _PAIR_ADDRESS_CACHE2 === void 0 ? void 0 : _PAIR_ADDRESS_CACHE2[tokens[0].address], (_extends2 = {}, _extends2[tokens[1].address] = getCreate2Address(curFACTORY, keccak256(['bytes'], [pack(['address', 'address'], [tokens[0].address, tokens[1].address])]), INIT_CODE_HASH), _extends2)), _extends3));
+      PAIR_ADDRESS_CACHE = _extends({}, PAIR_ADDRESS_CACHE, (_extends3 = {}, _extends3[tokens[0].address] = _extends({}, (_PAIR_ADDRESS_CACHE2 = PAIR_ADDRESS_CACHE) === null || _PAIR_ADDRESS_CACHE2 === void 0 ? void 0 : _PAIR_ADDRESS_CACHE2[tokens[0].address], (_extends2 = {}, _extends2[tokens[1].address] = getCreate2Address(curFACTORY, keccak256(['bytes'], [pack(['address', 'address'], [tokens[0].address, tokens[1].address])]), initCodeHash), _extends2)), _extends3));
     }
-    console.log('TokenA:')
-    console.log(tokenA)
-    console.log('TokenB:')
-    console.log(tokenB)
-    console.log('FACTORY: ' + curFACTORY)
-    console.log('PAIR_ADDRESS_CACHE: ' + PAIR_ADDRESS_CACHE[tokens[0].address][tokens[1].address])
+
     return PAIR_ADDRESS_CACHE[tokens[0].address][tokens[1].address];
   }
   /**
