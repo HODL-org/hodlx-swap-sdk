@@ -758,12 +758,15 @@ var Price = /*#__PURE__*/function (_Fraction) {
 
 var PAIR_ADDRESS_CACHE = {};
 var Pair = /*#__PURE__*/function () {
-  function Pair(tokenAmountA, tokenAmountB) {
+  function Pair(tokenAmountA, tokenAmountB, liquidity = false) {
     var tokenAmounts = tokenAmountA.token.sortsBefore(tokenAmountB.token) // does safety checks
     ? [tokenAmountA, tokenAmountB] : [tokenAmountB, tokenAmountA];
-    this.liquidityToken = new Token(tokenAmounts[0].token.chainId, Pair.getAddress(tokenAmounts[0].token, tokenAmounts[1].token), 18, 'Hodlx-LP-Test', 'Hodlx LPs-Test');
+    this.liquidityToken = new Token(tokenAmounts[0].token.chainId, 
+      liquidity && ((tokenAmounts[0].token.symbol === "HODL" && tokenAmounts[1].token.symbol === "WBNB") || (tokenAmounts[0].token.symbol === "WBNB" && tokenAmounts[1].token.symbol === "HODL")) ? 
+        "0x0bd7F4AEBed7b748E4743A8C544B7C5450dD7EBa" : Pair.getAddress(tokenAmounts[0].token, tokenAmounts[1].token), 18, 'Hodlx-LP', 'Hodlx LPs');
     this.tokenAmounts = tokenAmounts;
   }
+
 
   Pair.getAddress = function getAddress(tokenA, tokenB) {
     var _PAIR_ADDRESS_CACHE, _PAIR_ADDRESS_CACHE$t;
